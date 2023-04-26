@@ -11,7 +11,14 @@ import (
 	"github.com/oliveagle/jsonpath"
 )
 
-func run() int {
+func fatalIf(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	var jp string
 
 	flag.StringVar(&jp, "p", "$.id", "jsonpath to the value for sort column")
@@ -27,32 +34,25 @@ func run() int {
 			if err == io.EOF {
 				break
 			}
-			fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
-			return 1
+			return err
 		}
 		vv = append(vv, v)
 	}
 
 	sort.Slice(vv, func(i, j int) bool {
 		v1, err := jsonpath.JsonPathLookup(vv[i], jp)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
-			os.Exit(1)
-		}
+		fatalIf(err)
 		v2, err := jsonpath.JsonPathLookup(vv[j], jp)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
-			os.Exit(1)
-		}
+		fatalIf(err)
 		return fmt.Sprint(v1) < fmt.Sprint(v2)
 	})
 	enc := json.NewEncoder(os.Stdout)
 	for _, v := range vv {
 		enc.Encode(v)
 	}
-	return 0
+	return nil
 }
 
 func main() {
-	os.Exit(run())
+	fatalIf(run())
 }
