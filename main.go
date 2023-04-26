@@ -11,6 +11,12 @@ import (
 	"github.com/oliveagle/jsonpath"
 )
 
+const name = "jsonsort"
+
+const version = "0.0.0"
+
+var revision = "HEAD"
+
 func fatalIf(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
