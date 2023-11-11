@@ -26,8 +26,10 @@ func fatalIf(err error) {
 
 func run() error {
 	var jp string
+	var r bool
 
 	flag.StringVar(&jp, "p", "$.id", "jsonpath to the value for sort column")
+	flag.BoolVar(&r, "r", false, "reverse")
 	flag.Parse()
 
 	dec := json.NewDecoder(os.Stdin)
@@ -50,6 +52,9 @@ func run() error {
 		fatalIf(err)
 		v2, err := jsonpath.JsonPathLookup(vv[j], jp)
 		fatalIf(err)
+		if r {
+			return fmt.Sprint(v2) < fmt.Sprint(v1)
+		}
 		return fmt.Sprint(v1) < fmt.Sprint(v2)
 	})
 	enc := json.NewEncoder(os.Stdout)
