@@ -53,7 +53,13 @@ func run() error {
 		v2, err := jsonpath.JsonPathLookup(vv[j], jp)
 		fatalIf(err)
 		if r {
+			if v2 == v1 {
+				return fmt.Sprint(vv[j]) < fmt.Sprint(vv[i])
+			}
 			return fmt.Sprint(v2) < fmt.Sprint(v1)
+		}
+		if v2 == v1 {
+			return fmt.Sprint(vv[i]) < fmt.Sprint(vv[j])
 		}
 		return fmt.Sprint(v1) < fmt.Sprint(v2)
 	})
